@@ -1,18 +1,21 @@
 <?php
- require 'scraperwiki.php';
+require 'scraperwiki.php';
+define("COOKIE_FILE", "cookie.txt");
  
 $User_Agent = 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31';
 
 $request_headers = array();
 $request_headers[] = 'User-Agent: '. $User_Agent;
-$request_headers[] = 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-
-$request_headers[] = "Cookie: JSESSIONID=46A5A3F99A9D970F8B8475605981D557; SESS22bc52a8dc31c3bc53c24f94db1f17ae=3apq250bjusubkj9hf2db3i261; _ga=GA1.3.1336023891.1472917685";
 
 
 $url = "http://albopretorio.comune.genova.it/ialbo/consultazioneEnter.action";
 $curl = curl_init($url);
+curl_setopt ($curl, CURLOPT_COOKIEJAR, COOKIE_FILE);
+curl_setopt ($curl, CURLOPT_COOKIEFILE, COOKIE_FILE);
+curl_setopt($curl, CURLOPT_HEADER, true);
+
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($curl,CURLOPT_FOLLOWLOCATION,true);
 curl_setopt($curl, CURLOPT_HTTPHEADER, $request_headers);
 
 $output = curl_exec($curl);
@@ -79,5 +82,6 @@ foreach ($links as $link){
    'pubblicazione' => $pubblicazione,
    'url' => $url
  );
+
 scraperwiki::save_sqlite(array('id_riga'), $record); 
 }
